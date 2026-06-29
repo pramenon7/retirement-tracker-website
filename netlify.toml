@@ -1,0 +1,10 @@
+# Netlify build settings for the Retirement Tracker (Vite + React)
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA fallback so client-side routing (if added later) works on refresh
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
