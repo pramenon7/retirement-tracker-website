@@ -31,10 +31,10 @@ function initAccountState() {
 export default function App() {
   const [profile, setProfile] = useState({
     salary: 85000,
-    currentAge: 32,
+    currentAge: 30,
     retirementAge: 65,
     paychecksPerYear: 26,
-    monthlyWithdrawal: 5000,
+    monthlyWithdrawal: 7000,
   });
 
   const [assumptions, setAssumptions] = useState({
@@ -91,7 +91,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="masthead">
-        <p className="eyebrow">Retirement Tracker</p>
+        <p className="eyebrow">Nest Egg</p>
         <h1>See your whole retirement, account by account.</h1>
         <p>
           Most calculators ask for one net-worth number and one contribution. This one goes deeper —
