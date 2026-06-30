@@ -141,7 +141,7 @@ export default function App() {
         <div className="masthead-top">
           <p className="eyebrow">Nest Egg</p>
           <button className="share-btn" onClick={handleShare}>
-            {copied ? '✓ Copied!' : 'Copy link'}
+            {copied ? '✓ Copied!' : 'Share/Save Inputs'}
           </button>
         </div>
         <h1>See your whole retirement, account by account.</h1>
