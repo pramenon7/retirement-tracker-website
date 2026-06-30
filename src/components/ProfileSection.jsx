@@ -25,7 +25,7 @@ export default function ProfileSection({ profile, setProfile }) {
             onChange={(v) => set('paychecksPerYear')(Number(v))}
             options={PAYCHECK_OPTIONS}
           />
-          <MoneyField label="Monthly withdrawal" sub="in retirement" value={profile.monthlyWithdrawal} onChange={set('monthlyWithdrawal')} />
+          <MoneyField label="Monthly withdrawal" sub="in today's dollars" value={profile.monthlyWithdrawal} onChange={set('monthlyWithdrawal')} />
         </div>
       </div>
     </section>

@@ -18,19 +18,22 @@ function downloadCsv(filename, headers, rows) {
 }
 
 export default function DrawdownTable({ model, monthlyWithdrawal, retirementAge, currentAge, inflationPct }) {
-  const { atRetirement, retirementReturnPct } = model;
+  const { atRetirement, retirementReturnPct, yearsToRetire } = model;
+
+  const inflationFactor = Math.pow(1 + (Number(inflationPct) || 0) / 100, yearsToRetire);
+  const nominalMonthlyWithdrawal = (Number(monthlyWithdrawal) || 0) * inflationFactor;
 
   const rows = useMemo(
     () =>
       simulateDrawdownTimeline({
         startingBalance: atRetirement.nominalTotal,
-        monthlyWithdrawal: Number(monthlyWithdrawal) || 0,
+        monthlyWithdrawal: nominalMonthlyWithdrawal,
         retirementReturnPct,
         inflationPct: Number(inflationPct) || 0,
         retirementAge: Number(retirementAge) || 0,
         currentAge: Number(currentAge) || 0,
       }),
-    [atRetirement.nominalTotal, monthlyWithdrawal, retirementReturnPct, inflationPct, retirementAge, currentAge]
+    [atRetirement.nominalTotal, nominalMonthlyWithdrawal, retirementReturnPct, inflationPct, retirementAge, currentAge]
   );
 
   const csvHeaders = ['Age', 'Start Balance', 'Withdrawn', 'Growth', 'End Balance', "End Balance (Today's $)"];
@@ -44,6 +47,7 @@ export default function DrawdownTable({ model, monthlyWithdrawal, retirementAge,
   ]);
 
   const annualWithdrawal = (Number(monthlyWithdrawal) || 0) * 12;
+  const nominalAnnualWithdrawal = nominalMonthlyWithdrawal * 12;
 
   if (rows.length === 0) {
     return (
@@ -64,9 +68,9 @@ export default function DrawdownTable({ model, monthlyWithdrawal, retirementAge,
         <div>
           <h2>Post-retirement drawdown</h2>
           <p className="table-hint">
-            Starting at age {retirementAge}, withdrawing {money(annualWithdrawal)}/yr
-            (inflation-adjusted to hold purchasing power). Blended return:{' '}
-            {percent(retirementReturnPct)}.
+            Starting at age {retirementAge}, withdrawing {money(annualWithdrawal)}/yr in today&apos;s
+            dollars ({money(nominalAnnualWithdrawal)}/yr at retirement in nominal terms,
+            inflation-adjusted each year). Blended return: {percent(retirementReturnPct)}.
           </p>
         </div>
         <button className="dl-btn" onClick={() => downloadCsv('drawdown.csv', csvHeaders, csvRows)}>

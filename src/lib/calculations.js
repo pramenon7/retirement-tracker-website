@@ -115,11 +115,15 @@ export function snapshotAt(timeline, yearOffset) {
 }
 
 // Weighted-average growth rate across accounts (used as the retirement return).
-export function blendedGrowth(accounts) {
+// Pass balanceOverrides (e.g. retirement snapshot's byAccount) to weight by
+// future balances instead of today's — more accurate for drawdown planning.
+export function blendedGrowth(accounts, balanceOverrides = null) {
   let totalWeight = 0;
   let weighted = 0;
   accounts.forEach((a) => {
-    const bal = Number(a.balance) || 0;
+    const bal = balanceOverrides !== null
+      ? (Number(balanceOverrides[a.id]) || 0)
+      : (Number(a.balance) || 0);
     totalWeight += bal;
     weighted += bal * (Number(a.growthPct) || 0);
   });
@@ -236,13 +240,21 @@ export function runModel(inputs) {
     snapshot: snapshotAt(timeline, y),
   }));
 
-  const retirementReturnPct = blendedGrowth(inputs.accounts);
+  // Use retirement-balance weights so the blended rate reflects the portfolio
+  // the user will actually have at retirement, not today's (possibly zero) balances.
+  const retirementReturnPct = blendedGrowth(inputs.accounts, atRetirement.byAccount);
+
+  // The user enters their desired withdrawal in today's purchasing power.
+  // Inflate to retirement-year nominal dollars before running drawdown math.
+  const inflationFactor = Math.pow(1 + inputs.inflationPct / 100, yearsToRetire);
+  const nominalMonthlyWithdrawal = (Number(inputs.monthlyWithdrawal) || 0) * inflationFactor;
+
   const drawdown = analyzeDrawdown({
     startingBalance: atRetirement.nominalTotal,
-    monthlyWithdrawal: inputs.monthlyWithdrawal,
+    monthlyWithdrawal: nominalMonthlyWithdrawal,
     retirementReturnPct,
     inflationPct: inputs.inflationPct,
   });
 
-  return { timeline, atRetirement, milestones, drawdown, retirementReturnPct, yearsToRetire };
+  return { timeline, atRetirement, milestones, drawdown, retirementReturnPct, yearsToRetire, inflationPct: inputs.inflationPct };
 }

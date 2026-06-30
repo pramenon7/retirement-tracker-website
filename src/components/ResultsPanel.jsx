@@ -10,7 +10,9 @@ const CAT_COLORS = {
 const CAT_LABEL = Object.fromEntries(CATEGORIES.map((c) => [c.id, c.label]));
 
 export default function ResultsPanel({ model, profile }) {
-  const { atRetirement, milestones, drawdown, retirementReturnPct, yearsToRetire } = model;
+  const { atRetirement, milestones, drawdown, retirementReturnPct, yearsToRetire, inflationPct } = model;
+  const inflationFactor = Math.pow(1 + (inflationPct || 0) / 100, yearsToRetire);
+  const safeMontlyTodayDollars = drawdown.safeMonthly / inflationFactor;
 
   const total = atRetirement.nominalTotal;
   const cats = Object.entries(atRetirement.byCategory).filter(([, v]) => v > 0);
@@ -80,8 +82,8 @@ export default function ResultsPanel({ model, profile }) {
             <span className="v">{years(drawdown.lastsYears)}</span>
           </li>
           <li>
-            <span className="k">4%-rule guide (year one)</span>
-            <span className="v">{money(drawdown.safeMonthly)}/mo</span>
+            <span className="k">4%-rule guide (today's dollars)</span>
+            <span className="v">{money(safeMontlyTodayDollars)}/mo</span>
           </li>
         </ul>
         <p style={{ fontSize: 12, color: 'var(--ink-faint)', margin: '10px 0 0' }}>
