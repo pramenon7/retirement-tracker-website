@@ -6,6 +6,8 @@ import AccountsSection from './components/AccountsSection';
 import AssumptionsSection from './components/AssumptionsSection';
 import ResultsPanel from './components/ResultsPanel';
 import MethodologyPanel from './components/MethodologyPanel';
+import AccumulationTable from './components/AccumulationTable';
+import DrawdownTable from './components/DrawdownTable';
 
 function initAccountState() {
   const s = {};
@@ -124,6 +126,17 @@ export default function App() {
           {tab === 'results' ? <ResultsPanel model={model} profile={profile} /> : <MethodologyPanel />}
         </div>
       </div>
+
+      <section className="tables-section">
+        <AccumulationTable model={model} />
+        <DrawdownTable
+          model={model}
+          monthlyWithdrawal={profile.monthlyWithdrawal}
+          retirementAge={profile.retirementAge}
+          currentAge={profile.currentAge}
+          inflationPct={assumptions.inflationPct}
+        />
+      </section>
 
       <footer className="foot">
         Educational planning tool — not financial advice. All calculations run in your browser; nothing is stored or sent anywhere.

@@ -163,6 +163,68 @@ export function analyzeDrawdown({ startingBalance, monthlyWithdrawal, retirement
   return { lastsYears, depletes, safeMonthly, verdict };
 }
 
+/**
+ * Year-by-year drawdown simulation from retirement until depletion or age 100.
+ * Uses the same monthly-compounding order as analyzeDrawdown (grow, then withdraw,
+ * then inflate next month's withdrawal to hold purchasing power constant).
+ *
+ * @returns Array of annual snapshots:
+ *   { year, age, startBalance, annualWithdrawal, growthEarned, endBalance, realEndBalance }
+ *   Invariant: endBalance === startBalance + growthEarned - annualWithdrawal (within rounding)
+ */
+export function simulateDrawdownTimeline({
+  startingBalance,
+  monthlyWithdrawal,
+  retirementReturnPct,
+  inflationPct,
+  retirementAge,
+  currentAge,
+}) {
+  const monthlyRate = (retirementReturnPct / 100) / 12;
+  const monthlyInflation = Math.pow(1 + inflationPct / 100, 1 / 12) - 1;
+  const yearsToRetire = Math.max(0, retirementAge - currentAge);
+  const MAX_YEARS = Math.max(0, 100 - retirementAge);
+
+  let balance = startingBalance;
+  let withdrawal = monthlyWithdrawal;
+  const rows = [];
+
+  for (let year = 0; year < MAX_YEARS; year++) {
+    if (balance <= 0) break;
+
+    const startBalance = balance;
+    let totalWithdrawn = 0;
+    let totalGrowth = 0;
+
+    for (let m = 0; m < 12; m++) {
+      const growth = balance * monthlyRate;
+      totalGrowth += growth;
+      const postGrowth = balance + growth;
+      const actualWithdrawal = Math.min(postGrowth, withdrawal);
+      totalWithdrawn += actualWithdrawal;
+      balance = postGrowth - actualWithdrawal;
+      withdrawal *= (1 + monthlyInflation);
+      if (balance <= 0) { balance = 0; break; }
+    }
+
+    const endBalance = balance;
+    const realFactor = Math.pow(1 + inflationPct / 100, yearsToRetire + year + 1);
+    rows.push({
+      year: year + 1,
+      age: retirementAge + year,
+      startBalance,
+      annualWithdrawal: totalWithdrawn,
+      growthEarned: totalGrowth,
+      endBalance,
+      realEndBalance: endBalance / realFactor,
+    });
+
+    if (endBalance <= 0) break;
+  }
+
+  return rows;
+}
+
 // Convenience: run the whole model and return the pieces the UI needs.
 export function runModel(inputs) {
   const timeline = simulateTimeline(inputs);
