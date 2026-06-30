@@ -41,11 +41,14 @@ function WarnIcon() {
   );
 }
 
+const CASH_IDS = new Set(['emergency', 'hysa']);
+
 function AccountRow({ acct, state, onChange, useGlobalGrowth, warning }) {
   const s = state || { balance: 0, growthPct: acct.defaultGrowth, contribution: { mode: acct.contributionType === 'percent' ? 'percent' : 'dollar', value: 0 } };
   const setField = (patch) => onChange({ ...s, ...patch });
   const setContribution = (patch) => onChange({ ...s, contribution: { ...s.contribution, ...patch } });
   const hasContrib = acct.contributionType !== 'none';
+  const lockGrowth = useGlobalGrowth && !CASH_IDS.has(acct.id);
 
   return (
     <>
@@ -83,8 +86,8 @@ function AccountRow({ acct, state, onChange, useGlobalGrowth, warning }) {
           <div style={{ position: 'relative' }}>
             <input type="number" min={0} max={12} step={0.5}
               value={s.growthPct}
-              disabled={useGlobalGrowth}
-              style={{ opacity: useGlobalGrowth ? 0.5 : 1, paddingRight: 24 }}
+              disabled={lockGrowth}
+              style={{ opacity: lockGrowth ? 0.5 : 1, paddingRight: 24 }}
               onChange={(e) => setField({ growthPct: e.target.value === '' ? '' : Number(e.target.value) })} />
             <span style={{ position: 'absolute', right: 9, top: 9, color: 'var(--ink-faint)', fontFamily: 'var(--mono)', fontSize: 13 }}>%</span>
           </div>

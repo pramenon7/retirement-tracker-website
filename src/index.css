@@ -45,6 +45,16 @@ body {
 .app { max-width: 1080px; margin: 0 auto; padding: 0 20px 96px; }
 
 .masthead { padding: 40px 0 28px; border-bottom: 1px solid var(--line); margin-bottom: 32px; }
+.masthead-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 0; }
+.share-btn {
+  font-family: var(--body); font-size: 12px; font-weight: 500;
+  color: var(--ink-muted); background: var(--card);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  padding: 6px 13px; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  transition: background 0.12s, color 0.12s;
+}
+.share-btn:hover { background: var(--surface); }
+.share-btn[data-copied='true'] { color: var(--growth); border-color: var(--growth); }
 .masthead .eyebrow {
   font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
   text-transform: uppercase; color: var(--growth); margin: 0 0 10px;
@@ -235,6 +245,65 @@ input:focus, select:focus { outline: 2px solid var(--growth); outline-offset: 1p
 .data-table tr.row-depleted td { color: var(--warn); }
 
 /* ---- End tables section ---------------------------------------------------- */
+
+/* ---- Snapshot card --------------------------------------------------------- */
+
+.snapshot-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin-bottom: 16px;
+}
+.snapshot-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 14px;
+}
+.snapshot-item:first-child { padding-left: 0; }
+.snapshot-item:last-child { padding-right: 0; }
+.snapshot-divider {
+  width: 1px;
+  background: var(--line);
+  flex-shrink: 0;
+}
+.snapshot-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-faint);
+}
+.snapshot-value {
+  font-family: var(--mono);
+  font-size: 17px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.snapshot-value--secondary {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--growth);
+}
+
+/* ---- End snapshot card ----------------------------------------------------- */
+
+.contact-panel { padding: 4px 0; }
+.contact-panel h3 { font-family: var(--display); font-weight: 500; font-size: 18px; margin: 0 0 10px; }
+.contact-panel p { color: var(--ink-muted); font-size: 14px; margin: 0 0 16px; }
+.contact-link {
+  display: inline-block; font-family: var(--mono); font-size: 14px;
+  color: var(--growth); text-decoration: none;
+  border: 1px solid var(--growth); border-radius: var(--radius-sm);
+  padding: 9px 16px;
+}
+.contact-link:hover { background: var(--growth-soft); }
 
 .foot { margin-top: 40px; text-align: center; font-size: 12px; color: var(--ink-faint); }
 

@@ -12,7 +12,7 @@ export default function AssumptionsSection({ assumptions, setAssumptions }) {
           <div>
             <div style={{ fontSize: 13, fontWeight: 500 }}>Growth rate</div>
             <div style={{ fontSize: 12, color: 'var(--ink-faint)' }}>
-              Use one rate for every account, or set them per account below.
+              Use one rate for every account, or set them per account below. Cash &amp; savings accounts (emergency fund, HYSA) always keep their individual rates.
             </div>
           </div>
           <div className="seg">
